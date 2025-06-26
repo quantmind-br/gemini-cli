@@ -1,0 +1,56 @@
+{
+  "name": "mcp-gemini-cli",
+  "version": "1.0.0",
+  "description": "MCP Server that exposes Gemini CLI capabilities to other LLMs",
+  "type": "module",
+  "main": "dist/server.js",
+  "bin": {
+    "mcp-gemini-cli": "dist/server.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist",
+    "prepare": "npm run build",
+    "test": "vitest",
+    "test:server": "node scripts/test-server.js",
+    "install:setup": "bash scripts/install.sh",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix",
+    "format": "prettier --write src/**/*.ts",
+    "format:check": "prettier --check src/**/*.ts",
+    "typecheck": "tsc --noEmit",
+    "validate": "npm run typecheck && npm run lint && npm run format:check"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "gemini",
+    "cli",
+    "code-editing",
+    "llm"
+  ],
+  "author": "Diogo Soares Rodrigues",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "zod": "^3.22.0",
+    "diff": "^5.1.0",
+    "shell-quote": "^1.8.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/diff": "^5.0.0",
+    "@types/shell-quote": "^1.7.0",
+    "typescript": "^5.0.0",
+    "eslint": "^8.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "prettier": "^3.0.0",
+    "vitest": "^1.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

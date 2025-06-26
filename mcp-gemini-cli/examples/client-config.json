@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "gemini-cli": {
+      "command": "node",
+      "args": ["/path/to/mcp-gemini-cli/dist/server.js"],
+      "env": {
+        "GEMINI_CLI_PATH": "/usr/local/bin/gemini",
+        "GEMINI_MODEL": "gemini-2.0-flash-exp",
+        "MCP_APPROVAL_MODE": "yolo",
+        "MCP_DEBUG": "true",
+        "MCP_MAX_CONTEXT_FILES": "10",
+        "MCP_TIMEOUT_MS": "300000"
+      }
+    }
+  }
+}
