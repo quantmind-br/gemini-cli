@@ -44,6 +44,9 @@ describe('GeminiChat', () => {
       getModel: vi.fn().mockReturnValue('gemini-pro'),
       setModel: vi.fn(),
       flashFallbackHandler: undefined,
+      getRetryDelayMultiplier: vi.fn().mockReturnValue(2),
+      getMaxRetryDelay: vi.fn().mockReturnValue(30),
+      getMax429Retries: vi.fn().mockReturnValue(5),
     } as unknown as Config;
 
     // Disable 429 simulation for tests

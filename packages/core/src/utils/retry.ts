@@ -95,7 +95,7 @@ export async function retryWithBackoff<T>(
       // Track consecutive 429 errors
       if (errorStatus === 429) {
         consecutive429Count++;
-        
+
         // Check if we've exceeded max 429 retries
         if (consecutive429Count > max429Retries!) {
           throw error;
@@ -149,8 +149,9 @@ export async function retryWithBackoff<T>(
           // For 429 errors, use exponential backoff starting from 2 seconds
           const base429Delay = 2000; // Start with 2 seconds for 429 errors
           const retryDelay = Math.min(
-            base429Delay * Math.pow(retryDelayMultiplier!, consecutive429Count - 1),
-            maxDelayMs
+            base429Delay *
+              Math.pow(retryDelayMultiplier!, consecutive429Count - 1),
+            maxDelayMs,
           );
           console.warn(
             `Rate limit hit (429). Attempt ${attempt}/${maxAttempts}. Waiting ${Math.round(retryDelay / 1000)}s before retry ${consecutive429Count}/${max429Retries} for 429 errors...`,
@@ -163,7 +164,10 @@ export async function retryWithBackoff<T>(
           const jitter = currentDelay * 0.3 * (Math.random() * 2 - 1);
           const delayWithJitter = Math.max(0, currentDelay + jitter);
           await delay(delayWithJitter);
-          currentDelay = Math.min(maxDelayMs, currentDelay * retryDelayMultiplier!);
+          currentDelay = Math.min(
+            maxDelayMs,
+            currentDelay * retryDelayMultiplier!,
+          );
         }
       }
     }

@@ -8,10 +8,15 @@ import updateNotifier from 'update-notifier';
 import { getPackageJson } from '../../utils/package.js';
 import { LoadedSettings } from '../../config/settings.js';
 
-export async function checkForUpdates(settings?: LoadedSettings): Promise<string | null> {
+export async function checkForUpdates(
+  settings?: LoadedSettings,
+): Promise<string | null> {
   // Check if update checking is disabled (default is true - disabled)
   const disableUpdateCheck = settings?.merged.disableUpdateCheck ?? true;
-  if (disableUpdateCheck || process.env.GEMINI_CLI_DISABLE_UPDATE_CHECK === 'true') {
+  if (
+    disableUpdateCheck ||
+    process.env.GEMINI_CLI_DISABLE_UPDATE_CHECK === 'true'
+  ) {
     return null;
   }
   try {
