@@ -53,6 +53,10 @@ interface CliArgs {
   telemetryTarget: string | undefined;
   telemetryOtlpEndpoint: string | undefined;
   telemetryLogPrompts: boolean | undefined;
+  'disable-model-fallback': boolean | undefined;
+  'retry-delay-multiplier': number | undefined;
+  'max-retry-delay': number | undefined;
+  'max-429-retries': number | undefined;
 }
 
 async function parseArguments(): Promise<CliArgs> {
@@ -127,6 +131,26 @@ async function parseArguments(): Promise<CliArgs> {
       type: 'boolean',
       description: 'Enables checkpointing of file edits',
       default: false,
+    })
+    .option('disable-model-fallback', {
+      type: 'boolean',
+      description: 'Disable automatic fallback from gemini-2.5-pro to gemini-2.5-flash on rate limits',
+      default: process.env.GEMINI_DISABLE_MODEL_FALLBACK === 'true' || false,
+    })
+    .option('retry-delay-multiplier', {
+      type: 'number',
+      description: 'Multiplier for exponential backoff delay on 429 errors',
+      default: Number(process.env.GEMINI_RETRY_DELAY_MULTIPLIER) || 2,
+    })
+    .option('max-retry-delay', {
+      type: 'number',
+      description: 'Maximum delay in seconds for retries on 429 errors',
+      default: Number(process.env.GEMINI_MAX_RETRY_DELAY) || 30,
+    })
+    .option('max-429-retries', {
+      type: 'number',
+      description: 'Maximum number of retries for 429 errors before giving up',
+      default: Number(process.env.GEMINI_MAX_429_RETRIES) || 5,
     })
     .version(await getCliVersion()) // This will enable the --version flag based on package.json
     .alias('v', 'version')
@@ -245,6 +269,10 @@ export async function loadCliConfig(
     bugCommand: settings.bugCommand,
     model: argv.model!,
     extensionContextFilePaths,
+    disableModelFallback: argv['disable-model-fallback'] || false,
+    retryDelayMultiplier: argv['retry-delay-multiplier'] || 2,
+    maxRetryDelay: argv['max-retry-delay'] || 30,
+    max429Retries: argv['max-429-retries'] || 5,
   });
 }
 

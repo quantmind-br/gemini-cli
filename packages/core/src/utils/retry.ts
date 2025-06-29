@@ -13,6 +13,8 @@ export interface RetryOptions {
   shouldRetry: (error: Error) => boolean;
   onPersistent429?: (authType?: string) => Promise<string | null>;
   authType?: string;
+  retryDelayMultiplier?: number;
+  max429Retries?: number;
 }
 
 const DEFAULT_RETRY_OPTIONS: RetryOptions = {
@@ -20,6 +22,8 @@ const DEFAULT_RETRY_OPTIONS: RetryOptions = {
   initialDelayMs: 5000,
   maxDelayMs: 30000, // 30 seconds
   shouldRetry: defaultShouldRetry,
+  retryDelayMultiplier: 2,
+  max429Retries: 5,
 };
 
 /**
@@ -70,6 +74,8 @@ export async function retryWithBackoff<T>(
     onPersistent429,
     authType,
     shouldRetry,
+    retryDelayMultiplier,
+    max429Retries,
   } = {
     ...DEFAULT_RETRY_OPTIONS,
     ...options,
@@ -89,6 +95,11 @@ export async function retryWithBackoff<T>(
       // Track consecutive 429 errors
       if (errorStatus === 429) {
         consecutive429Count++;
+        
+        // Check if we've exceeded max 429 retries
+        if (consecutive429Count > max429Retries!) {
+          throw error;
+        }
       } else {
         consecutive429Count = 0;
       }
@@ -133,13 +144,27 @@ export async function retryWithBackoff<T>(
         // Reset currentDelay for next potential non-429 error, or if Retry-After is not present next time
         currentDelay = initialDelayMs;
       } else {
-        // Fallback to exponential backoff with jitter
-        logRetryAttempt(attempt, error, errorStatus);
-        // Add jitter: +/- 30% of currentDelay
-        const jitter = currentDelay * 0.3 * (Math.random() * 2 - 1);
-        const delayWithJitter = Math.max(0, currentDelay + jitter);
-        await delay(delayWithJitter);
-        currentDelay = Math.min(maxDelayMs, currentDelay * 2);
+        // Implement different backoff strategies for 429 vs other errors
+        if (errorStatus === 429) {
+          // For 429 errors, use exponential backoff starting from 2 seconds
+          const base429Delay = 2000; // Start with 2 seconds for 429 errors
+          const retryDelay = Math.min(
+            base429Delay * Math.pow(retryDelayMultiplier!, consecutive429Count - 1),
+            maxDelayMs
+          );
+          console.warn(
+            `Rate limit hit (429). Attempt ${attempt}/${maxAttempts}. Waiting ${Math.round(retryDelay / 1000)}s before retry ${consecutive429Count}/${max429Retries} for 429 errors...`,
+          );
+          await delay(retryDelay);
+        } else {
+          // For other errors, use standard exponential backoff with jitter
+          logRetryAttempt(attempt, error, errorStatus);
+          // Add jitter: +/- 30% of currentDelay
+          const jitter = currentDelay * 0.3 * (Math.random() * 2 - 1);
+          const delayWithJitter = Math.max(0, currentDelay + jitter);
+          await delay(delayWithJitter);
+          currentDelay = Math.min(maxDelayMs, currentDelay * retryDelayMultiplier!);
+        }
       }
     }
   }

@@ -126,6 +126,10 @@ export interface ConfigParameters {
   bugCommand?: BugCommandSettings;
   model: string;
   extensionContextFilePaths?: string[];
+  disableModelFallback?: boolean;
+  retryDelayMultiplier?: number;
+  maxRetryDelay?: number;
+  max429Retries?: number;
 }
 
 export class Config {
@@ -166,6 +170,10 @@ export class Config {
   private readonly extensionContextFilePaths: string[];
   private modelSwitchedDuringSession: boolean = false;
   flashFallbackHandler?: FlashFallbackHandler;
+  private readonly disableModelFallback: boolean;
+  private readonly retryDelayMultiplier: number;
+  private readonly maxRetryDelay: number;
+  private readonly max429Retries: number;
 
   constructor(params: ConfigParameters) {
     this.sessionId = params.sessionId;
@@ -207,6 +215,10 @@ export class Config {
     this.bugCommand = params.bugCommand;
     this.model = params.model;
     this.extensionContextFilePaths = params.extensionContextFilePaths ?? [];
+    this.disableModelFallback = params.disableModelFallback ?? false;
+    this.retryDelayMultiplier = params.retryDelayMultiplier ?? 2;
+    this.maxRetryDelay = params.maxRetryDelay ?? 30;
+    this.max429Retries = params.max429Retries ?? 5;
 
     if (params.contextFileName) {
       setGeminiMdFilename(params.contextFileName);
@@ -281,6 +293,22 @@ export class Config {
       this.contentGeneratorConfig.model = this.model; // Reset to the original default model
       this.modelSwitchedDuringSession = false;
     }
+  }
+
+  getDisableModelFallback(): boolean {
+    return this.disableModelFallback;
+  }
+
+  getRetryDelayMultiplier(): number {
+    return this.retryDelayMultiplier;
+  }
+
+  getMaxRetryDelay(): number {
+    return this.maxRetryDelay;
+  }
+
+  getMax429Retries(): number {
+    return this.max429Retries;
   }
 
   setFlashFallbackHandler(handler: FlashFallbackHandler): void {

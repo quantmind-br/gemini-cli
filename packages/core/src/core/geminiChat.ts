@@ -196,6 +196,11 @@ export class GeminiChat {
    * Uses a fallback handler if provided by the config, otherwise returns null.
    */
   private async handleFlashFallback(authType?: string): Promise<string | null> {
+    // Check if model fallback is disabled
+    if (this.config.getDisableModelFallback()) {
+      return null;
+    }
+
     // Only handle fallback for OAuth users
     if (authType !== AuthType.LOGIN_WITH_GOOGLE_PERSONAL) {
       return null;
@@ -277,6 +282,9 @@ export class GeminiChat {
         onPersistent429: async (authType?: string) =>
           await this.handleFlashFallback(authType),
         authType: this.config.getContentGeneratorConfig()?.authType,
+        retryDelayMultiplier: this.config.getRetryDelayMultiplier(),
+        maxDelayMs: this.config.getMaxRetryDelay() * 1000, // Convert seconds to milliseconds
+        max429Retries: this.config.getMax429Retries(),
       });
       const durationMs = Date.now() - startTime;
       await this._logApiResponse(
@@ -374,6 +382,9 @@ export class GeminiChat {
         onPersistent429: async (authType?: string) =>
           await this.handleFlashFallback(authType),
         authType: this.config.getContentGeneratorConfig()?.authType,
+        retryDelayMultiplier: this.config.getRetryDelayMultiplier(),
+        maxDelayMs: this.config.getMaxRetryDelay() * 1000, // Convert seconds to milliseconds
+        max429Retries: this.config.getMax429Retries(),
       });
 
       // Resolve the internal tracking of send completion promise - `sendPromise`
