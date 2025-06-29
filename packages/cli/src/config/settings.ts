@@ -64,6 +64,17 @@ export interface Settings {
   // UI setting. Does not display the ANSI-controlled terminal title.
   hideWindowTitle?: boolean;
 
+  // Disable automatic update checking
+  disableUpdateCheck?: boolean;
+
+  // Disable automatic model fallback from gemini-2.5-pro to gemini-2.5-flash
+  disableModelFallback?: boolean;
+
+  // Retry configuration for 429 errors
+  retryDelayMultiplier?: number;
+  maxRetryDelay?: number;
+  max429Retries?: number;
+
   // Add other settings here.
 }
 

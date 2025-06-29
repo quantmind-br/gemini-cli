@@ -93,8 +93,8 @@ const App = ({ config, settings, startupWarnings = [] }: AppProps) => {
   const { stdout } = useStdout();
 
   useEffect(() => {
-    checkForUpdates().then(setUpdateMessage);
-  }, []);
+    checkForUpdates(settings).then(setUpdateMessage);
+  }, [settings]);
 
   const { history, addItem, clearItems, loadHistory } = useHistory();
   const {

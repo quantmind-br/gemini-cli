@@ -6,6 +6,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+// Suppress known deprecation warnings from legacy dependencies
+import { suppressKnownWarnings } from './src/utils/suppressWarnings.js';
+suppressKnownWarnings();
+
 import './src/gemini.js';
 import { main } from './src/gemini.js';
 

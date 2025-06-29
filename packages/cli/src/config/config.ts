@@ -135,7 +135,7 @@ async function parseArguments(): Promise<CliArgs> {
     .option('disable-model-fallback', {
       type: 'boolean',
       description: 'Disable automatic fallback from gemini-2.5-pro to gemini-2.5-flash on rate limits',
-      default: process.env.GEMINI_DISABLE_MODEL_FALLBACK === 'true' || false,
+      default: process.env.GEMINI_DISABLE_MODEL_FALLBACK === 'false' ? false : true,
     })
     .option('retry-delay-multiplier', {
       type: 'number',
@@ -269,10 +269,10 @@ export async function loadCliConfig(
     bugCommand: settings.bugCommand,
     model: argv.model!,
     extensionContextFilePaths,
-    disableModelFallback: argv['disable-model-fallback'] || false,
-    retryDelayMultiplier: argv['retry-delay-multiplier'] || 2,
-    maxRetryDelay: argv['max-retry-delay'] || 30,
-    max429Retries: argv['max-429-retries'] || 5,
+    disableModelFallback: argv['disable-model-fallback'] ?? settings.disableModelFallback ?? true,
+    retryDelayMultiplier: argv['retry-delay-multiplier'] ?? settings.retryDelayMultiplier ?? 2,
+    maxRetryDelay: argv['max-retry-delay'] ?? settings.maxRetryDelay ?? 30,
+    max429Retries: argv['max-429-retries'] ?? settings.max429Retries ?? 5,
   });
 }
 

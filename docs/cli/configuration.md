@@ -148,6 +148,11 @@ In addition to a project settings file, a project's `.gemini` directory can cont
   - **Default:** `vscode`
   - **Example:** `"preferredEditor": "vscode"`
 
+- **`disableUpdateCheck`** (boolean):
+  - **Description:** Disables automatic update checking when the CLI starts. When enabled, the CLI will no longer check for new versions and display update notifications.
+  - **Default:** `true`
+  - **Example:** `"disableUpdateCheck": false` (to enable update checks)
+
 - **`telemetry`** (object)
   - **Description:** Configures logging and metrics collection for Gemini CLI. For more information, see [Telemetry](../telemetry.md).
   - **Default:** `{"enabled": false, "target": "local", "otlpEndpoint": "http://localhost:4317", "logPrompts": true}`
@@ -264,6 +269,11 @@ The CLI automatically loads environment variables from an `.env` file. The loadi
 - **`CODE_ASSIST_ENDPOINT`**:
   - Specifies the endpoint for the code assist server.
   - This is useful for development and testing.
+- **`GEMINI_CLI_DISABLE_UPDATE_CHECK`**:
+  - Set to `true` to disable automatic update checking (default behavior).
+  - Set to `false` to enable automatic update checking.
+  - Alternative to the `disableUpdateCheck` setting in `settings.json`.
+  - Example: `export GEMINI_CLI_DISABLE_UPDATE_CHECK=false` (to enable updates)
 
 ## Command-Line Arguments
 
