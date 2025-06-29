@@ -13,6 +13,7 @@ bower_components
 # Editors
 .idea
 *.iml
+.vscode/
 
 # OS metadata
 .DS_Store
@@ -36,3 +37,15 @@ packages/*/coverage/
 # Generated files
 packages/cli/src/generated/
 .integration-tests/
+
+# Workspace lockfiles
+packages/*/package-lock.json
+
+# AI context files
+.claude/
+MODS.md
+CLAUDE.md
+BUILD.md
+CONTEXT.md
+REPORT.md
+shotgun_context_dev.txt
