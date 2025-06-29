@@ -220,6 +220,8 @@ npm run lint
 
 For more detailed architecture, see `docs/architecture.md`.
 
+For a comprehensive list of all environment variables, see the [Environment Variables documentation](./docs/ENV.md).
+
 ## Debugging
 
 ### VS Code:

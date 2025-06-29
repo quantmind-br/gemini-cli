@@ -215,6 +215,8 @@ The CLI keeps a history of shell commands you run. To avoid conflicts between di
 
 ## Environment Variables & `.env` Files
 
+For a comprehensive list of all environment variables, see the [Environment Variables documentation](../ENV.md).
+
 Environment variables are a common way to configure applications, especially for sensitive information like API keys or for settings that might change between environments.
 
 The CLI automatically loads environment variables from an `.env` file. The loading order is:

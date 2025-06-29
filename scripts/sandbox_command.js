@@ -48,7 +48,7 @@ if (!geminiSandbox) {
 
 if (!geminiSandbox) {
   let currentDir = process.cwd();
-  while (currentDir !== '/') {
+  while (currentDir !== dirname(currentDir)) {
     const geminiEnv = join(currentDir, '.gemini', '.env');
     const regularEnv = join(currentDir, '.env');
     if (existsSync(geminiEnv)) {
@@ -112,7 +112,9 @@ if (['1', 'true'].includes(geminiSandbox)) {
       process.exit(1);
     }
   } else {
-    process.exit(1);
+    // On Windows and other non-macOS systems, if no sandbox is configured,
+    // we can exit cleanly as it's not an error.
+    process.exit(0);
   }
 }
 

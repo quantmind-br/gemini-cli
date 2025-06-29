@@ -92,6 +92,9 @@ max429Retries: argv['max-429-retries'] || 5,
 ```
 
 ### Variáveis de Ambiente Suportadas
+
+For a comprehensive list of all environment variables, see the [Environment Variables documentation](./docs/ENV.md).
+
 ```bash
 GEMINI_DISABLE_MODEL_FALLBACK=true
 GEMINI_RETRY_DELAY_MULTIPLIER=3

@@ -1,0 +1,34 @@
+# Shotgun Terminal ignore patterns
+# This file is auto-generated. Edit with caution.
+
+# Default patterns (always applied):
+# *.egg-info
+# *.log
+# *.pyc
+# *.tmp
+# .DS_Store
+# .env
+# .git
+# .gitignore
+# .shotgunignore
+# __pycache__
+# build
+# dist
+# node_modules
+
+# Custom patterns:
+.claude/
+.gemini/
+.vscode/
+BUILD.md
+CLAUDE.md
+CONTEXT.md
+MODS.md
+REPORT.md
+bundle/
+packages\cli\coverage/
+packages\cli\dist\tsconfig.tsbuildinfo
+packages\cli\src\generated/
+packages\core\coverage/
+packages\core\dist\tsconfig.tsbuildinfo
+packages\core\package-lock.json

@@ -56,6 +56,8 @@ This project uses **Vitest** as its primary testing framework. When writing test
 
 ## Git Repo
 
+For a comprehensive list of all environment variables, see the [Environment Variables documentation](./docs/ENV.md).
+
 The main branch for this project is called "main"
 
 ## JavaScript/TypeScript
