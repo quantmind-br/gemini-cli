@@ -11,11 +11,13 @@ import process from 'node:process';
 // Suppress punycode deprecation warning from 'uri-js' dependency
 const originalEmit = process.emit;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-process.emit = function (name, ...args: any[]) {
+(process.emit as any) = function (name: string, ...args: any[]): boolean {
   if (name === 'warning' && typeof args[0] === 'object' && (args[0] as { message?: string })?.message?.includes('punycode')) {
     return false;
   }
-  return originalEmit.apply(process, arguments as any);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const result = originalEmit.apply(process, [name, ...args] as any);
+  return Boolean(result);
 };
 
 import './src/gemini.js';
