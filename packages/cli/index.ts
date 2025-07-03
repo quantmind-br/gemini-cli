@@ -6,6 +6,18 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import process from 'node:process';
+
+// Suppress punycode deprecation warning from 'uri-js' dependency
+const originalEmit = process.emit;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+process.emit = function (name, ...args: any[]) {
+  if (name === 'warning' && typeof args[0] === 'object' && (args[0] as { message?: string })?.message?.includes('punycode')) {
+    return false;
+  }
+  return originalEmit.apply(process, arguments as any);
+};
+
 import './src/gemini.js';
 import { main } from './src/gemini.js';
 

@@ -203,8 +203,6 @@ async function loadCachedCredentials(client: OAuth2Client): Promise<boolean> {
       return false;
     }
 
-    // This will check with the server to see if it hasn't been revoked.
-    await client.getTokenInfo(token);
 
     return true;
   } catch (_) {

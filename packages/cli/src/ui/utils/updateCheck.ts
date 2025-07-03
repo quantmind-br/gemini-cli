@@ -19,8 +19,6 @@ export async function checkForUpdates(): Promise<string | null> {
         name: packageJson.name,
         version: packageJson.version,
       },
-      // check every time
-      updateCheckInterval: 0,
       // allow notifier to run in scripts
       shouldNotifyInNpmScript: true,
     });
