@@ -4,8 +4,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { AuthType } from '../core/contentGenerator.js';
-
 export interface RetryOptions {
   maxAttempts: number;
   initialDelayMs: number;
@@ -67,8 +65,8 @@ export async function retryWithBackoff<T>(
     maxAttempts,
     initialDelayMs,
     maxDelayMs,
-    onPersistent429,
-    authType,
+    onPersistent429: _onPersistent429,
+    authType: _authType,
     shouldRetry,
   } = {
     ...DEFAULT_RETRY_OPTIONS,
@@ -77,7 +75,7 @@ export async function retryWithBackoff<T>(
 
   let attempt = 0;
   let currentDelay = initialDelayMs;
-  let consecutive429Count = 0;
+  let _consecutive429Count = 0;
 
   while (attempt < maxAttempts) {
     attempt++;
@@ -88,9 +86,9 @@ export async function retryWithBackoff<T>(
 
       // Track consecutive 429 errors
       if (errorStatus === 429) {
-        consecutive429Count++;
+        _consecutive429Count++;
       } else {
-        consecutive429Count = 0;
+        _consecutive429Count = 0;
       }
 
       // Fallback disabled for now

@@ -12,7 +12,11 @@ import process from 'node:process';
 const originalEmit = process.emit;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 (process.emit as any) = function (name: string, ...args: any[]): boolean {
-  if (name === 'warning' && typeof args[0] === 'object' && (args[0] as { message?: string })?.message?.includes('punycode')) {
+  if (
+    name === 'warning' &&
+    typeof args[0] === 'object' &&
+    (args[0] as { message?: string })?.message?.includes('punycode')
+  ) {
     return false;
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

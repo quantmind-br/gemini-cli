@@ -1,0 +1,17 @@
+# Shotgun Terminal ignore patterns
+# This file is auto-generated. Edit with caution.
+
+# Default patterns (always applied):
+# *.egg-info
+# *.log
+# *.pyc
+# *.tmp
+# .DS_Store
+# .env
+# .git
+# .gitignore
+# .shotgunignore
+# __pycache__
+# build
+# dist
+# node_modules

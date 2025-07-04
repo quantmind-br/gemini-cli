@@ -1,0 +1,134 @@
+
+```diff
+diff --git a/packages/cli/index.ts b/packages/cli/index.ts
+index 548c77e..930a005 100644
+--- a/packages/cli/index.ts
++++ b/packages/cli/index.ts
+@@ -4,6 +4,17 @@
+  * SPDX-License-Identifier: Apache-2.0
+  */
+ 
++import process from 'node:process';
++
++// Suppress punycode deprecation warning from 'uri-js' dependency
++const originalEmit = process.emit;
++// eslint-disable-next-line @typescript-eslint/no-explicit-any
++process.emit = function (name, ...args: any[]) {
++  if (name === 'warning' && typeof args[0] === 'object' && (args[0] as { message?: string })?.message?.includes('punycode')) {
++    return false;
++  }
++  return originalEmit.apply(process, arguments as any);
++};
++
+ import './src/gemini.js';
+ import { main } from './src/gemini.js';
+ 
+diff --git a/packages/cli/src/ui/utils/updateCheck.ts b/packages/cli/src/ui/utils/updateCheck.ts
+index 7253504..2551e17 100644
+--- a/packages/cli/src/ui/utils/updateCheck.ts
++++ b/packages/cli/src/ui/utils/updateCheck.ts
+@@ -13,8 +13,6 @@
+         name: packageJson.name,
+         version: packageJson.version,
+       },
+-      // check every time
+-      updateCheckInterval: 0,
+       // allow notifier to run in scripts
+       shouldNotifyInNpmScript: true,
+     });
+diff --git a/packages/core/src/code_assist/oauth2.ts b/packages/core/src/code_assist/oauth2.ts
+index 036e897..5843477 100644
+--- a/packages/core/src/code_assist/oauth2.ts
++++ b/packages/core/src/code_assist/oauth2.ts
+@@ -124,9 +124,6 @@
+       return false;
+     }
+ 
+-    // This will check with the server to see if it hasn't been revoked.
+-    await client.getTokenInfo(token);
+-
+     return true;
+   } catch (_) {
+     return false;
+diff --git a/packages/core/src/core/client.ts b/packages/core/src/core/client.ts
+index 069634e..9877b63 100644
+--- a/packages/core/src/core/client.ts
++++ b/packages/core/src/core/client.ts
+@@ -308,6 +308,9 @@
+    * Uses a fallback handler if provided by the config, otherwise returns null.
+    */
+   private async handleFlashFallback(authType?: string): Promise<string | null> {
++    // Model fallback is disabled.
++    return null;
++
+     // Only handle fallback for OAuth users
+     if (authType !== AuthType.LOGIN_WITH_GOOGLE) {
+       return null;
+diff --git a/packages/core/src/utils/retry.ts b/packages/core/src/utils/retry.ts
+index 92765d7..46b6c00 100644
+--- a/packages/core/src/utils/retry.ts
++++ b/packages/core/src/utils/retry.ts
+@@ -110,23 +110,24 @@
+         throw error;
+       }
+ 
+-      const { delayDurationMs, errorStatus: delayErrorStatus } =
+-        getDelayDurationAndStatus(error);
++      const retryAfterDelayMs = getRetryAfterDelayMs(error);
+ 
+-      if (delayDurationMs > 0) {
++      if (retryAfterDelayMs > 0) {
+         // Respect Retry-After header if present and parsed
+         console.warn(
+-          `Attempt ${attempt} failed with status ${delayErrorStatus ?? 'unknown'}. Retrying after explicit delay of ${delayDurationMs}ms...`,
++          `Attempt ${attempt} failed with status ${errorStatus ?? 'unknown'}. Retrying after explicit delay of ${retryAfterDelayMs}ms...`,
+           error,
+         );
+-        await delay(delayDurationMs);
++        await delay(retryAfterDelayMs);
+         // Reset currentDelay for next potential non-429 error, or if Retry-After is not present next time
+         currentDelay = initialDelayMs;
+       } else {
+         // Fallback to exponential backoff with jitter
+         logRetryAttempt(attempt, error, errorStatus);
+         // Add jitter: +/- 30% of currentDelay
+         const jitter = currentDelay * 0.3 * (Math.random() * 2 - 1);
+         const delayWithJitter = Math.max(0, currentDelay + jitter);
+         await delay(delayWithJitter);
+-        currentDelay = Math.min(maxDelayMs, currentDelay * 2);
++        // Differentiated backoff for 429 errors
++        if (errorStatus === 429) {
++          currentDelay = Math.min(maxDelayMs, currentDelay * 2);
++        } else {
++          currentDelay = Math.min(maxDelayMs, currentDelay * 1.5);
++        }
+       }
+     }
+   }
+@@ -194,22 +195,6 @@
+ }
+ 
+ /**
+- * Determines the delay duration based on the error, prioritizing Retry-After header.
+- * @param error The error object.
+- * @returns An object containing the delay duration in milliseconds and the error status.
+- */
+-function getDelayDurationAndStatus(error: unknown): {
+-  delayDurationMs: number;
+-  errorStatus: number | undefined;
+-} {
+-  const errorStatus = getErrorStatus(error);
+-  let delayDurationMs = 0;
+-
+-  if (errorStatus === 429) {
+-    delayDurationMs = getRetryAfterDelayMs(error);
+-  }
+-  return { delayDurationMs, errorStatus };
+-}
+-
+-/**
+  * Logs a message for a retry attempt when using exponential backoff.
+  * @param attempt The current attempt number.
+  * @param error The error that caused the retry.
+
+```

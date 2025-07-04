@@ -203,7 +203,6 @@ async function loadCachedCredentials(client: OAuth2Client): Promise<boolean> {
       return false;
     }
 
-
     return true;
   } catch (_) {
     return false;
